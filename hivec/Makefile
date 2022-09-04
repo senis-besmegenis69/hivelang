@@ -141,6 +141,8 @@ $(BIN_DIR)/$(EXEC): $(OBJS)
 	@echo "Building executable: $@"
 	@mkdir -p $(@D)
 	@$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
+	# NOTE: Symlink works only on linux!
+	@ln -sf $(BIN_DIR)/$(EXEC) ./$(EXEC)
 
 # Compile C source files
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
