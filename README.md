@@ -87,6 +87,24 @@ The hivelang will have the following keywords:
 	end
 	```
 
+ - `switch`<br>usage:
+	```
+	switch a:
+		case 0:
+		end
+
+		case 1:
+		case 2:
+		end
+
+		case 3:
+		end
+
+		default:
+		end
+	end
+	```
+
  - `for`<br>usage:
 	```
 	for i32 i = 0; i < 10; i++:
@@ -221,12 +239,6 @@ The hivelang will have the following keywords:
 	f64 v = 2;
 	```
 
-
-
-
-
-
-
  - `string`<br>usage:
 	```
 	string str = "Hello!\n";
@@ -251,10 +263,10 @@ proc linearSum(i32 count, i32[] values) -> i64:
 end
 
 
-export proc main(const i32 argc, const string[] args) -> i32:
+proc main(const i32 argc, const string[] args) -> i32:
 	if argc > 1:
 		for i32 i = 1; i < argc; i++:
-			std::print(f"{}-th argument is {}\n", i, args[i]);
+			std::print(f"{i}-th argument is {args[i]}\n");
 		end
 
 		return argc;

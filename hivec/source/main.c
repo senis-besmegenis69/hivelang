@@ -1,9 +1,9 @@
 
 /**
- * @file main.c
+ * @file types.h
  * 
- * @copyright This file is a part of the project beelang and is distributed under MIT license which
- * should have been included with the project. If not see: https://choosealicense.com/licenses/mit/
+ * @copyright This file is a part of the project hivelang and is distributed under MIT license that
+ * should have been included with the project. If not, see https://choosealicense.com/licenses/mit/
  * 
  * @author jorisb
  * 

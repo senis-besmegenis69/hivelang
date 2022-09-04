@@ -1,0 +1,42 @@
+
+import "std.io.hlang";
+import "std.math.hlang";
+
+
+struct Circle:
+	f64 radius;
+	f64 area;
+end
+
+[ignore_warnings]
+constproc pi() -> f64:
+	return 3.14159265359f;
+end
+
+[ignore_warnings]
+proc main(i32 argc, string[] args) -> i32:
+	Circle circle;
+	circle.radius = 4.5f;
+
+	if true:
+	end
+
+	for i32 i = 0; i < 10; i++:
+	end
+
+	while false:
+	end
+
+	switch circle.area:
+		case pi():
+		end
+
+		default:
+		end
+	end
+
+	circle.area = pi() * circle.radius * circle.radius;
+	std::print("Area of a circle of {} radius is {}", circle.radius, circle.area);
+	std::print(f"Area of a circle of {circle.radius} radius is {circle.area}");
+	return 0;
+end

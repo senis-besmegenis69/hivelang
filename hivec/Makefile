@@ -141,8 +141,6 @@ $(BIN_DIR)/$(EXEC): $(OBJS)
 	@echo "Building executable: $@"
 	@mkdir -p $(@D)
 	@$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
-	@# NOTE: Symlink works only on linux!
-	@ln -sf $(BIN_DIR)/$(EXEC) ./$(EXEC)
 
 # Compile C source files
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
@@ -163,7 +161,7 @@ install: all
 .PHONY: run
 run: all
 	@echo "Starting program: $(BIN_DIR)/$(EXEC)"
-	@cd ./$(BIN_DIR); ./$(EXEC)
+	@cd ./$(BIN_DIR); ./$(EXEC) $(ARGS)
 
 # Clean build and bin directories for all platforms
 .PHONY: clean
