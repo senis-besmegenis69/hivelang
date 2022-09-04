@@ -7,16 +7,16 @@
 EXEC = hivec
 
 # Build, bin, assets, and install directories (bin and build root directories are kept for clean)
-BUILD_DIR_ROOT = build
-BIN_DIR_ROOT = bin
+BUILD_DIR_ROOT = ./build
+BIN_DIR_ROOT = ./bin
 INSTALL_DIR := ~/Desktop/$(EXEC)
 
 # Sources (searches recursively inside the source directory)
-SRC_DIR = source
-SRCS := $(sort $(shell find $(SRC_DIR) -name '*.c'))
+SRC_DIR = ./source
+SRCS := $(SRC_DIR)/main.c
 
 # Includes
-INCLUDE_DIR = include
+INCLUDE_DIR = ./include
 INCLUDES := -I$(INCLUDE_DIR)
 
 # C preprocessor settings
@@ -142,7 +142,7 @@ $(BIN_DIR)/$(EXEC): $(OBJS)
 	@mkdir -p $(@D)
 	@$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
-# Compile C++ source files
+# Compile C source files
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
 	@echo "Compiling: $<"
 	@mkdir -p $(@D)
