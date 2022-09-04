@@ -14,6 +14,8 @@
 
 ## Building
 
+Note: the hivelang compiler (hivec) depends on LLVM toolkit.
+
 ```shell
 cd <hivec-root>
 make
