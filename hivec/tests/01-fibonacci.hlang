@@ -1,0 +1,11 @@
+
+proc fib(i64 x) -> i64:
+	if x < 3i:
+		return 1i;
+	end
+
+	return fib(x - 1i) + fib(x - 2i);
+end
+
+
+fib(40);
