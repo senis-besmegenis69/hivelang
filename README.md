@@ -61,16 +61,10 @@ The hivelang will have the following keywords:
 	end
 	```
 
- - `constproc`<br>usage:
+ - `mutable`<br>usage:
 	```
-	constproc myFunc() -> void:
-		// The code...
-	end
-	```
-
- - `const`<br>usage:
-	```
-	const i32 val = 4;
+	mutable string val = "hello";
+	val[0] = 'y';
 	```
 
  - `return`<br>usage:
