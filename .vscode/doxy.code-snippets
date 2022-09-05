@@ -1,7 +1,7 @@
 
 {
 	"DoxyBanner": {
-		"prefix": "doxy-banner",
+		"prefix": "banner",
 		"description": "Doxygen banner snippet",
 		"body": [
 			"",
