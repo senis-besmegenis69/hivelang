@@ -1,6 +1,4 @@
 
-#!/bin/sh
-
 # Doxyfile 1.9.1
 
 # This file describes the settings to be used by the documentation system
@@ -897,7 +895,11 @@ INPUT_ENCODING         = UTF-8
 # *.ucf, *.qsf and *.ice.
 
 FILE_PATTERNS          = *.cpp \
+                         *.cc \
+                         *.c \
                          *.hpp \
+                         *.hh \
+                         *.h \
                          *.inl \
                          *.md
 

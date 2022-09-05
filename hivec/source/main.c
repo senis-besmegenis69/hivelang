@@ -1,6 +1,6 @@
 
 /**
- * @file main.cpp
+ * @file main.c
  *
  * @copyright This file is a part of the project hivelang and is distributed under MIT license that
  * should have been included with the project. If not, see https://choosealicense.com/licenses/mit/
@@ -10,10 +10,10 @@
  * @date 2022-09-05
  */
 
-#include <iostream>
+#include <stdio.h>
 
 int main(int argc, char** argv)
 {
-	std::cout << "Hello, Hivec!\n";
+	fprintf(stdout, "Hello!\n");
 	return 0;
 }

@@ -13,7 +13,7 @@ INSTALL_DIR := ~/Desktop/$(EXEC)
 
 # Sources (searches recursively inside the source directory)
 SRC_DIR = ./source
-SRCS := $(SRC_DIR)/main.cpp
+SRCS := $(SRC_DIR)/main.c
 
 # Includes
 INCLUDE_DIR = ./include
@@ -23,8 +23,8 @@ INCLUDES := -I$(INCLUDE_DIR)
 CPPFLAGS = $(INCLUDES) -MMD -MP
 
 # C++ compiler settings
-CXX = g++
-CXXFLAGS = -std=c++11
+CC = gcc
+CFLAGS = -std=c11
 WARNINGS = -Wall -Wpedantic -Wextra
 
 # Linker flags
@@ -91,10 +91,10 @@ ifeq ($(OS),windows)
 
 	ifeq ($(win32),1)
 		# Compile for 32-bit
-		CXXFLAGS += -m32
+		CFLAGS += -m32
 	else
 		# Compile for 64-bit
-		CXXFLAGS += -m64
+		CFLAGS += -m64
 	endif
 endif
 
@@ -117,16 +117,16 @@ endif
 ifeq ($(release),1)
 	BUILD_DIR := $(BUILD_DIR)/release
 	BIN_DIR := $(BIN_DIR)/release
-	CXXFLAGS += -O3
+	CFLAGS += -O3
 	CPPFLAGS += -DNDEBUG
 else
 	BUILD_DIR := $(BUILD_DIR)/debug
 	BIN_DIR := $(BIN_DIR)/debug
-	CXXFLAGS += -O0 -g
+	CFLAGS += -O0 -g
 endif
 
 # Objects and dependencies
-OBJS := $(SRCS:$(SRC_DIR)/%.cpp=$(BUILD_DIR)/%.o)
+OBJS := $(SRCS:$(SRC_DIR)/%.c=$(BUILD_DIR)/%.o)
 DEPS := $(OBJS:.o=.d)
 
 ################################################################################
@@ -140,13 +140,13 @@ all: $(BIN_DIR)/$(EXEC)
 $(BIN_DIR)/$(EXEC): $(OBJS)
 	@echo "Building executable: $@"
 	@mkdir -p $(@D)
-	@$(CXX) $(LDFLAGS) $^ $(LDLIBS) -o $@
+	@$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
-# Compile C++ source files
-$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
+# Compile C source files
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
 	@echo "Compiling: $<"
 	@mkdir -p $(@D)
-	@$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(WARNINGS) -c $< -o $@
+	@$(CC) $(CPPFLAGS) $(CFLAGS) $(WARNINGS) -c $< -o $@
 
 # Include automatically generated dependencies
 -include $(DEPS)
@@ -174,7 +174,7 @@ clean:
 .PHONY: format
 format:
 	@echo "Running clang-format"
-	@clang-format -i $$(find $(SRC_DIR) $(INCLUDE_DIR) -name '*.cpp' -o -name '*.hpp' -o -name '*.inl')
+	@clang-format -i $$(find $(SRC_DIR) $(INCLUDE_DIR) -name '*.c' -o -name '*.h' -o -name '*.inl')
 
 # Generate documentation with Doxygen
 .PHONY: doc
@@ -217,9 +217,9 @@ printvars:
 	SRCS: \"$(SRCS)\"\n\
 	INCLUDE_DIR: \"$(INCLUDE_DIR)\"\n\
 	INCLUDES: \"$(INCLUDES)\"\n\
-	CXX: \"$(CXX)\"\n\
+	CC: \"$(CC)\"\n\
 	CPPFLAGS: \"$(CPPFLAGS)\"\n\
-	CXXFLAGS: \"$(CXXFLAGS)\"\n\
+	CFLAGS: \"$(CFLAGS)\"\n\
 	WARNINGS: \"$(WARNINGS)\"\n\
 	LDFLAGS: \"$(LDFLAGS)\"\n\
 	LDLIBS: \"$(LDLIBS)\"\n"
