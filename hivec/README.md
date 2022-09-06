@@ -12,6 +12,11 @@
 ![#](https://img.shields.io/badge/Native-Unknown-lightgrey)<br>
 
 
+## For contributors
+
+The backend of the compiler will be implemented using [QBE](https://c9x.me/compile/) tool.
+
+
 ## Building
 
 Note: the hivelang compiler (hivec) depends on LLVM toolkit.

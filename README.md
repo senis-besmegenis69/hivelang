@@ -6,7 +6,7 @@
 
 HLang compiler - [hivec](./hivec/README.md)<br>
 HLang standard library - [hivestd](#)<br>
-HLang  package manager - [hivepm](#)<br>
+HLang package manager - [hivepm](#)<br>
 
 
 ## HLang syntax
