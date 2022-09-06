@@ -257,26 +257,26 @@ proc linearSum(i32 count, i32[] values) -> i64:
 end
 
 
-proc main(const i32 argc, const string[] args) -> i32:
-	if argc > 1:
-		for i32 i = 1; i < argc; i++:
+proc main(i32 argc, string[] args) -> i32:
+	if argc > 1i:
+		for mutable i32 i = 1i; i < argc; i++:
 			std::print(f"{i}-th argument is {args[i]}\n");
 		end
 
 		return argc;
 	end
 
-	if argc < 33:
-		i32[] values = i32[32];
+	if argc < 33i:
+		mutable i32[] values = i32[32u];
 
-		for i32 i = 1; i < argc; i++:
+		for mutable i32 i = 1i; i < argc; i++:
 			values[i] = args[i].length();
 		end
 
-		return linearSum(argc - 1, values);
+		return linearSum(argc - 1i, values);
 	end
 
-	return 0u;
+	return 0i;
 end
 
 // Parentheses can be used inside if, for, and other statements / expressions.
