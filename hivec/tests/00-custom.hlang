@@ -9,7 +9,7 @@ struct Circle:
 end
 
 [ignore_warnings]
-constproc pi() -> f64:
+proc pi() -> f64:
 	return 3.14159265359f;
 end
 

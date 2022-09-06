@@ -7,5 +7,7 @@ proc fib(i64 x) -> i64:
 	return fib(x - 1i) + fib(x - 2i);
 end
 
-
-fib(40);
+[ignore_warnings]
+proc main(int argcm string[] argv) -> void:
+	fib(40);
+end
