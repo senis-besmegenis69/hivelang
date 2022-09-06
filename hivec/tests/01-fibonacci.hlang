@@ -1,4 +1,7 @@
 
+#include "std.io.hlang"
+
+
 proc fib(i64 x) -> i64:
 	if x < 3i:
 		return 1i;
@@ -9,5 +12,6 @@ end
 
 [ignore_warnings]
 proc main(int argcm string[] argv) -> void:
-	fib(40);
+	i64 value = fib(40i);
+	std::print(f"Fibnacci of 40 is {value}\n");
 end
