@@ -1,5 +1,5 @@
 
-#include "std.io.hlang"
+import "std.io.hlang"
 
 
 proc fib(i64 x) -> i64:
