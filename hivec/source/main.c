@@ -10,10 +10,12 @@
  * @date 2022-09-05
  */
 
-#include <cassert>
-#include <cstring>
-#include <cstdio>
-#include <vector>
+#include <lex.h>
+
+#include <assert.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
 
 static void usage(
 	FILE* const stream,
@@ -58,7 +60,10 @@ int main(int argc, char** argv)
 
 	// Setting up arguments and configs
 	const char* output = NULL;
-	std::vector<const char*> sources;
+
+	#define sourcesCapacity ((signed int)2048)
+	const char* sources[sourcesCapacity];
+	signed int sourcesCount = 0;
 
 	// Parsing command-line arguments
 	while (argc > 0)
@@ -99,12 +104,21 @@ int main(int argc, char** argv)
 		}
 		else
 		{
-			sources.push_back(flag);
+			if (sourcesCount < sourcesCapacity)
+			{
+				sources[sourcesCount++] = flag;
+			}
+			else
+			{
+				fprintf(stderr, "Error: compiler supports up to %d source files!\n", sourcesCapacity);
+				usage(stderr, arg0);
+				return 1;
+			}
 		}
 	}
 
 	// Validating command-line arguments
-	if (sources.size() <= 0)
+	if (sources == NULL || sourcesCount <= 0)
 	{
 		fprintf(stderr, "Error: no sources were provided!\n");
 		usage(stderr, arg0);
@@ -117,7 +131,23 @@ int main(int argc, char** argv)
 	}
 
 	// Parsing the source and compiling the target
-	
+	for (signed int index = 0; index < sourcesCount; ++index)
+	{
+		fprintf(stdout, "%s\n", sources[index]);
+		
+		struct Lex_Lexer lexer = Lex_createLexer(sources[index]);
+		struct Lex_Token* token = NULL;
+
+		while ((token = Lex_nextToken(&lexer))->type != TYPE_EOF)
+		{
+			if (token->type == TYPE_ERROR)
+			{
+				fprintf(stdout, "Warning: encountered an error token at file: %s line: %lld column: %lld!\n", token->loc.file, token->loc.line, token->loc.column);
+			}
+		}
+
+		Lex_destroyLexer(&lexer);
+	}
 
 	return 0;
 }

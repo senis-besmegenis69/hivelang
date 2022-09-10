@@ -1,12 +1,12 @@
 
-import "std.hlang";
+proc main():
+	"Hello, World!\n" print
 
+	1i 1i == if
 
-[ignore_warnings]
-proc main:
-	print "Hello, World!\n"
+	end
 
-	if 1 == 1:
+	== while
 
 	end
 end
