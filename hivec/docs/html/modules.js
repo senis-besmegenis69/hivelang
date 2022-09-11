@@ -1,4 +1,5 @@
 var modules =
 [
-    [ "LEX", "d7/d18/group__LEX.html", "d7/d18/group__LEX" ]
+    [ "Lexer", "dd/da6/group__lexer.html", "dd/da6/group__lexer" ],
+    [ "Parser", "dd/da8/group__parser.html", "dd/da8/group__parser" ]
 ];

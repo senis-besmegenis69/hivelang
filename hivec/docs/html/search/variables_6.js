@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['type_0',['type',['../dc/dd5/structLex__Token.html#ad94b29f2d2d2329c9e61ea9e904dc8d6',1,'Lex_Token']]]
+  ['type_0',['type',['../df/dcd/structToken.html#ad32f7cccecc7fcb0deebe6f85893b79b',1,'Token']]]
 ];

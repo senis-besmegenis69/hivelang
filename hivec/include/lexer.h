@@ -62,6 +62,7 @@ enum Type
 	TYPE_COLUMN, // :
 
 	TYPE_IF, // if
+	TYPE_THEN, // then
 	TYPE_ELSE, // else
 	TYPE_END, // end
 	TYPE_USE, // use

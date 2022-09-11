@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['buffer_0',['buffer',['../d1/d52/structLex__Lexer.html#a77f9c8613ada08ba8cb0bafaa02c702f',1,'Lex_Lexer']]],
-  ['buffercapcity_1',['bufferCapcity',['../d3/deb/lex_8c.html#ad5ae437e7475fbf98933524001086848',1,'bufferCapcity():&#160;lex.c'],['../d3/deb/lex_8c.html#ad5ae437e7475fbf98933524001086848',1,'bufferCapcity():&#160;lex.c'],['../d3/deb/lex_8c.html#ad5ae437e7475fbf98933524001086848',1,'bufferCapcity():&#160;lex.c']]]
+  ['buffer_0',['buffer',['../dd/d0b/structLexer.html#aacec546c13a927e52ce51af9bd372ef1',1,'Lexer']]],
+  ['buffercapcity_1',['bufferCapcity',['../d8/d33/lexer_8c.html#ad5ae437e7475fbf98933524001086848',1,'bufferCapcity():&#160;lexer.c'],['../d8/d33/lexer_8c.html#ad5ae437e7475fbf98933524001086848',1,'bufferCapcity():&#160;lexer.c'],['../d8/d33/lexer_8c.html#ad5ae437e7475fbf98933524001086848',1,'bufferCapcity():&#160;lexer.c']]]
 ];

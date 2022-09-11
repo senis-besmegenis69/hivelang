@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['column_0',['column',['../d6/d3c/structLex__Location.html#aad3ac06fe682049fba6aa6a92395a947',1,'Lex_Location']]],
-  ['current_1',['current',['../d1/d52/structLex__Lexer.html#a471b2202d0e9ed50138661f2f1c42f43',1,'Lex_Lexer']]]
+  ['column_0',['column',['../d3/d98/structLocation.html#a76902b074e7b8826bc562fa95e99d426',1,'Location']]],
+  ['current_1',['current',['../dd/d0b/structLexer.html#ae5ba5425d4d0404275ac2334337c5c34',1,'Lexer']]]
 ];

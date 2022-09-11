@@ -55,6 +55,7 @@ const char* Type_stringify(
 		[TYPE_COLUMN] = ":", // :
 
 		[TYPE_IF] = "if", // if
+		[TYPE_THEN] = "then", // then
 		[TYPE_ELSE] = "else", // else
 		[TYPE_END] = "end", // end
 		[TYPE_USE] = "use", // use
@@ -267,10 +268,10 @@ static signed int Lexer_tryParseKeyword(
 	assert(token != NULL);
 
 	const char* keywords[] =
-	{ "if", "end", "use", "import", "proc" };
+	{ "if", "then", "else", "end", "use", "import", "proc" };
 
 	enum Type types[] =
-	{ TYPE_IF, TYPE_END, TYPE_USE, TYPE_IMPORT, TYPE_PROC };
+	{ TYPE_IF, TYPE_THEN, TYPE_ELSE, TYPE_END, TYPE_USE, TYPE_IMPORT, TYPE_PROC };
 
 	for (signed int i = 0; i < 5; ++i)
 	{
