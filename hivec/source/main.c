@@ -10,7 +10,8 @@
  * @date 2022-09-05
  */
 
-#include <lex.h>
+#include <parser.h>
+#include <lexer.h>
 
 #include <assert.h>
 #include <stdlib.h>
@@ -133,23 +134,7 @@ int main(int argc, char** argv)
 	// Parsing the source and compiling the target
 	for (signed int index = 0; index < sourcesCount; ++index)
 	{
-		fprintf(stdout, "%s\n", sources[index]);
-		
-		struct Lex_Lexer lexer = Lex_createLexer(sources[index]);
-		struct Lex_Token* token = NULL;
-
-		while ((token = Lex_nextToken(&lexer))->type != TYPE_EOF)
-		{
-			if (token->type == TYPE_ERROR)
-			{
-				// fprintf(stdout, "Warning: encountered an error token at file: %s line: %lld column: %lld!\n", token->loc.file, token->loc.line, token->loc.column);
-			}
-
-			fprintf(stdout, "%s\n", Lex_stringifyToken(token));
-			getchar();
-		}
-
-		Lex_destroyLexer(&lexer);
+		Parser_parse(sources[index]);
 	}
 
 	return 0;

@@ -10,7 +10,7 @@
  * @date 2022-09-10
  */
 
-#include <lex.h>
+#include <lexer.h>
 
 #include <assert.h>
 #include <stdlib.h>
@@ -18,22 +18,24 @@
 #include <stdio.h>
 #include <ctype.h>
 
-const char* Lex_stringifyLocation(
-	const struct Lex_Location* const loc)
+const char* Location_stringify(
+	const struct Location* const location)
 {
-	assert(loc != NULL);
+	assert(location != NULL);
 	#define bufferCapcity ((signed int)512)
 	static char buffer[bufferCapcity];
-	snprintf(buffer, bufferCapcity, "%s:%lld:%lld", loc->file, loc->line, loc->column);
+	snprintf(buffer, bufferCapcity, "%s:%lld:%lld", location->file, location->line, location->column);
 	#undef bufferCapcity
 	return buffer;
 }
 
-const char* Lex_stringifyType(
-	const enum Lex_Type type)
+const char* Type_stringify(
+	const enum Type type)
 {
 	static const char* stringifiedTypes[] =
 	{
+		[TYPE_ERROR] = "error",
+
 		[TYPE_ADDITION] = "+", // +
 		[TYPE_SUBTRACTION] = "-", // -
 		[TYPE_MULTIPLICATION] = "*", // *
@@ -53,6 +55,7 @@ const char* Lex_stringifyType(
 		[TYPE_COLUMN] = ":", // :
 
 		[TYPE_IF] = "if", // if
+		[TYPE_ELSE] = "else", // else
 		[TYPE_END] = "end", // end
 		[TYPE_USE] = "use", // use
 		[TYPE_IMPORT] = "import", // import
@@ -60,31 +63,35 @@ const char* Lex_stringifyType(
 
 		[TYPE_IDENTIFIER] = "identifier",
 		[TYPE_LITERAL] = "literal",
+		[TYPE_EOF] = "eof",
 	};
 
+	static_assert((long unsigned int)(TYPES_COUNT) == (sizeof(stringifiedTypes) / sizeof(const char*)));
 	assert((long unsigned int)(type) < (sizeof(stringifiedTypes) / sizeof(const char*)));
 	return stringifiedTypes[type];
 }
 
-const char* Lex_stringifyStorage(
-	const enum Lex_Storage storage)
+const char* Storage_stringify(
+	const enum Storage storage)
 {
 	static const char* stringifiedStorages[] =
 	{
 		[STORAGE_NONE] = "none",
+
 		[STORAGE_I64] = "i64",
 		[STORAGE_U64] = "u64",
 		[STORAGE_F64] = "f64",
 		[STORAGE_STRING] = "string",
 	};
 
+	static_assert((long unsigned int)(STORAGES_COUNT) == (sizeof(stringifiedStorages) / sizeof(const char*)));
 	assert((long unsigned int)(storage) < (sizeof(stringifiedStorages) / sizeof(const char*)));
 	return stringifiedStorages[storage];
 }
 
-const char* Lex_stringifyValue(
-	const enum Lex_Storage storage,
-	const union Lex_Value value)
+const char* Value_stringify(
+	const enum Storage storage,
+	const union Value value)
 {
 	#define bufferCapcity ((signed int)512)
 	static char buffer[bufferCapcity];
@@ -127,16 +134,16 @@ const char* Lex_stringifyValue(
 	return buffer;
 }
 
-static struct Lex_Token* Lex_createToken(
+static struct Token* Token_create(
 	void)
 {
-	struct Lex_Token* token = (struct Lex_Token*)malloc(sizeof(struct Lex_Token));
+	struct Token* token = (struct Token*)malloc(sizeof(struct Token));
 	assert(token != NULL);
 	return token;
 }
 
-void Lex_destroyToken(
-	struct Lex_Token* const token)
+void Token_destroy(
+	struct Token* const token)
 {
 	assert(token != NULL);
 	
@@ -166,95 +173,95 @@ void Lex_destroyToken(
 	free(token);
 }
 
-static void Lex_setupToken(
-	struct Lex_Token* const token,
-	const enum Lex_Type type,
-	const enum Lex_Storage storage,
-	const struct Lex_Location loc)
+static void Token_setup(
+	struct Token* const token,
+	const enum Type type,
+	const enum Storage storage,
+	const struct Location location)
 {
 	assert(token != NULL);
 	token->type = type;
 	token->storage = storage;
-	token->loc = loc;
+	token->location = location;
 }
 
-const char* Lex_stringifyToken(
-	const struct Lex_Token* const token)
+const char* Token_stringify(
+	const struct Token* const token)
 {
 	#define bufferCapcity ((signed int)1536)
 	static char buffer[bufferCapcity];
 
-	snprintf(buffer, bufferCapcity, "type=%s storage=%s value=%s location=%s",
-		Lex_stringifyType(token->type),
-		Lex_stringifyStorage(token->storage),
-		Lex_stringifyValue(token->storage, token->value),
-		Lex_stringifyLocation(&token->loc));
+	snprintf(buffer, bufferCapcity, "type=`%s` storage=`%s` value=`%s` location=`%s`",
+		Type_stringify(token->type),
+		Storage_stringify(token->storage),
+		Value_stringify(token->storage, token->value),
+		Location_stringify(&token->location));
 
 	#undef bufferCapcity
 	return buffer;
 }
 
-static void Lex_moveLexerBy(
-	struct Lex_Lexer* const lexer,
+static void Lexer_moveBy(
+	struct Lexer* const lexer,
 	signed long long amount)
 {
 	assert(lexer != NULL);
 
-	for (signed long long i = 0; i < amount; ++i)
+	for (signed long long i = 0; i < amount && i < lexer->length; ++i)
 	{
 		char current = *(lexer->current + i);
 
 		if (current == '\n')
 		{
-			++lexer->loc.line;
-			lexer->loc.column = 1;
+			++lexer->location.line;
+			lexer->location.column = 1;
 		}
 		else
 		{
-			++lexer->loc.column;
+			++lexer->location.column;
 		}
 	}
 
 	lexer->current += amount;
 }
 
-static void Lex_skipWhitespaces(
-	struct Lex_Lexer* const lexer)
+static void Lexer_skipWhitespaces(
+	struct Lexer* const lexer)
 {
 	assert(lexer != NULL);
 	while (*lexer->current == ' ' || *lexer->current == '\t' || *lexer->current == '\n' || *lexer->current == '\r')
-		Lex_moveLexerBy(lexer, 1);
+		Lexer_moveBy(lexer, 1);
 }
 
-static void Lex_skipSingleLineComment(
-	struct Lex_Lexer* const lexer)
+static void Lexer_skipSingleLineComment(
+	struct Lexer* const lexer)
 {
 	assert(lexer != NULL);
 	assert(*lexer->current == '/' && *(lexer->current + 1) == '/');
-	Lex_moveLexerBy(lexer, 2);
+	Lexer_moveBy(lexer, 2);
 
 	while (*lexer->current != '\n')
-		Lex_moveLexerBy(lexer, 1);
+		Lexer_moveBy(lexer, 1);
 	
-	Lex_moveLexerBy(lexer, 1);
+	Lexer_moveBy(lexer, 1);
 }
 
-static void Lex_skipMultiLineComment(
-	struct Lex_Lexer* const lexer)
+static void Lexer_skipMultiLineComment(
+	struct Lexer* const lexer)
 {
 	assert(lexer != NULL);
 	assert(*lexer->current == '/' && *(lexer->current + 1) == '*');
-	Lex_moveLexerBy(lexer, 2);
+	Lexer_moveBy(lexer, 2);
 
 	while (*lexer->current != '*' && *(lexer->current + 1) != '/')
-		Lex_moveLexerBy(lexer, 1);
+		Lexer_moveBy(lexer, 1);
 
-	Lex_moveLexerBy(lexer, 2);
+	Lexer_moveBy(lexer, 2);
 }
 
-static signed int Lex_tryParseKeyword(
-	struct Lex_Lexer* const lexer,
-	struct Lex_Token* const token)
+static signed int Lexer_tryParseKeyword(
+	struct Lexer* const lexer,
+	struct Token* const token)
 {
 	assert(lexer != NULL);
 	assert(token != NULL);
@@ -262,15 +269,15 @@ static signed int Lex_tryParseKeyword(
 	const char* keywords[] =
 	{ "if", "end", "use", "import", "proc" };
 
-	enum Lex_Type types[] =
+	enum Type types[] =
 	{ TYPE_IF, TYPE_END, TYPE_USE, TYPE_IMPORT, TYPE_PROC };
 
 	for (signed int i = 0; i < 5; ++i)
 	{
 		if (strncmp(lexer->current, keywords[i], strlen(keywords[i])) == 0)
 		{
-			Lex_setupToken(token, types[i], STORAGE_NONE, lexer->loc);
-			Lex_moveLexerBy(lexer, strlen(keywords[i]));
+			Token_setup(token, types[i], STORAGE_NONE, lexer->location);
+			Lexer_moveBy(lexer, strlen(keywords[i]));
 			return 1;
 		}
 	}
@@ -278,7 +285,7 @@ static signed int Lex_tryParseKeyword(
 	return 0;
 }
 
-static signed int Lex_isIdentifierChar(
+static signed int Lexer_isIdentifierChar(
 	const char c)
 {
 	return c == '_'
@@ -289,35 +296,35 @@ static signed int Lex_isIdentifierChar(
 		|| isdigit(c);
 }
 
-static signed int Lex_tryParseIdentifier(
-	struct Lex_Lexer* const lexer,
-	struct Lex_Token* const token)
+static signed int Lexer_tryParseIdentifier(
+	struct Lexer* const lexer,
+	struct Token* const token)
 {
 	assert(lexer != NULL);
 	assert(token != NULL);
 
-	if (!(Lex_isIdentifierChar(*lexer->current) && !(isdigit(*lexer->current))))
+	if (!(Lexer_isIdentifierChar(*lexer->current) && !(isdigit(*lexer->current))))
 	{
 		return 0;
 	}
 
-	Lex_setupToken(token, TYPE_IDENTIFIER, STORAGE_STRING, lexer->loc);
+	Token_setup(token, TYPE_IDENTIFIER, STORAGE_STRING, lexer->location);
 	signed long long i = 1;
 
-	for (; Lex_isIdentifierChar(*(lexer->current + i)); ++i);
+	for (; Lexer_isIdentifierChar(*(lexer->current + i)); ++i);
 
 	token->value.str = (char*)malloc((i + 1) * sizeof(char));
 	assert(token->value.str != NULL);
 	memcpy(token->value.str, lexer->current, i);
 	token->value.str[i] = 0;
 
-	Lex_moveLexerBy(lexer, i);
+	Lexer_moveBy(lexer, i);
 	return 1;
 }
 
-static signed int Lex_tryParseNumericLiteral(
-	struct Lex_Lexer* const lexer,
-	struct Lex_Token* const token)
+static signed int Lexer_tryParseNumericLiteral(
+	struct Lexer* const lexer,
+	struct Token* const token)
 {
 	assert(lexer != NULL);
 	assert(token != NULL);
@@ -345,31 +352,31 @@ static signed int Lex_tryParseNumericLiteral(
 
 	if (dots <= 0)
 	{
-		Lex_setupToken(token, TYPE_LITERAL, STORAGE_I64, lexer->loc);
+		Token_setup(token, TYPE_LITERAL, STORAGE_I64, lexer->location);
 		signed long long value;
 		sscanf(buffer, "%lld", &value);
 		token->value.i64 = value;
 	}
 	else if (dots == 1)
 	{
-		Lex_setupToken(token, TYPE_LITERAL, STORAGE_F64, lexer->loc);
+		Token_setup(token, TYPE_LITERAL, STORAGE_F64, lexer->location);
 		long double value;
 		sscanf(buffer, "%Lf", &value);
 		token->value.f64 = value;
 	}
 	else
 	{
-		Lex_setupToken(token, TYPE_ERROR, STORAGE_NONE, lexer->loc);
+		Token_setup(token, TYPE_ERROR, STORAGE_NONE, lexer->location);
 	}
 
-	Lex_moveLexerBy(lexer, i);
+	Lexer_moveBy(lexer, i);
 	return 1;
 }
 
-struct Lex_Lexer Lex_createLexer(
+struct Lexer Lexer_create(
 	const char* file)
 {
-	struct Lex_Lexer lexer = {0};
+	struct Lexer lexer = {0};
 	assert(file != NULL);
 
 	FILE* stream = fopen(file, "r");
@@ -385,47 +392,48 @@ struct Lex_Lexer Lex_createLexer(
 
 	lexer.buffer[fsize] = 0;
 
+	lexer.length = fsize;
 	lexer.current = lexer.buffer;
-	lexer.loc = (struct Lex_Location) { .file = file, .line = 1, .column = 1 };
+	lexer.location = (struct Location) { .file = file, .line = 1, .column = 1 };
 	return lexer;
 }
 
-void Lex_destroyLexer(
-	struct Lex_Lexer* const lexer)
+void Lexer_destroy(
+	struct Lexer* const lexer)
 {
 	assert(lexer != NULL);
 	free(lexer->buffer);
 }
 
-struct Lex_Token* Lex_nextToken(
-	struct Lex_Lexer* const lexer)
+struct Token* Lexer_nextToken(
+	struct Lexer* const lexer)
 {
 	assert(lexer != NULL);
-	struct Lex_Token* token = Lex_createToken();
+	struct Token* token = Token_create();
 
 begining:
-	Lex_skipWhitespaces(lexer);
+	Lexer_skipWhitespaces(lexer);
 
 	switch (*lexer->current)
 	{
 		case '+':
 		{
-			Lex_setupToken(token, TYPE_ADDITION, STORAGE_NONE, lexer->loc);
-			Lex_moveLexerBy(lexer, 1);
+			Token_setup(token, TYPE_ADDITION, STORAGE_NONE, lexer->location);
+			Lexer_moveBy(lexer, 1);
 			goto end;
 		} break;
 
 		case '-':
 		{
-			Lex_setupToken(token, TYPE_SUBTRACTION, STORAGE_NONE, lexer->loc);
-			Lex_moveLexerBy(lexer, 1);
+			Token_setup(token, TYPE_SUBTRACTION, STORAGE_NONE, lexer->location);
+			Lexer_moveBy(lexer, 1);
 			goto end;
 		} break;
 
 		case '*':
 		{
-			Lex_setupToken(token, TYPE_MULTIPLICATION, STORAGE_NONE, lexer->loc);
-			Lex_moveLexerBy(lexer, 1);
+			Token_setup(token, TYPE_MULTIPLICATION, STORAGE_NONE, lexer->location);
+			Lexer_moveBy(lexer, 1);
 			goto end;
 		} break;
 
@@ -435,20 +443,20 @@ begining:
 			{
 				case '/':
 				{
-					Lex_skipSingleLineComment(lexer);
+					Lexer_skipSingleLineComment(lexer);
 					goto begining;
 				} break;
 
 				case '*':
 				{
-					Lex_skipMultiLineComment(lexer);
+					Lexer_skipMultiLineComment(lexer);
 					goto begining;
 				} break;
 
 				default:
 				{
-					Lex_setupToken(token, TYPE_DIVISION, STORAGE_NONE, lexer->loc);
-					Lex_moveLexerBy(lexer, 1);
+					Token_setup(token, TYPE_DIVISION, STORAGE_NONE, lexer->location);
+					Lexer_moveBy(lexer, 1);
 					goto end;
 				} break;
 			}
@@ -460,15 +468,15 @@ begining:
 			{
 				case '=':
 				{
-					Lex_setupToken(token, TYPE_EQUAL, STORAGE_NONE, lexer->loc);
-					Lex_moveLexerBy(lexer, 2);
+					Token_setup(token, TYPE_EQUAL, STORAGE_NONE, lexer->location);
+					Lexer_moveBy(lexer, 2);
 					goto end;
 				} break;
 
 				default:
 				{
-					Lex_setupToken(token, TYPE_ERROR, STORAGE_NONE, lexer->loc);
-					Lex_moveLexerBy(lexer, 1);
+					Token_setup(token, TYPE_ERROR, STORAGE_NONE, lexer->location);
+					Lexer_moveBy(lexer, 1);
 					goto end;
 				} break;
 			}
@@ -480,15 +488,15 @@ begining:
 			{
 				case '=':
 				{
-					Lex_setupToken(token, TYPE_NOT_EQUAL, STORAGE_NONE, lexer->loc);
-					Lex_moveLexerBy(lexer, 2);
+					Token_setup(token, TYPE_NOT_EQUAL, STORAGE_NONE, lexer->location);
+					Lexer_moveBy(lexer, 2);
 					goto end;
 				} break;
 
 				default:
 				{
-					Lex_setupToken(token, TYPE_ERROR, STORAGE_NONE, lexer->loc);
-					Lex_moveLexerBy(lexer, 1);
+					Token_setup(token, TYPE_ERROR, STORAGE_NONE, lexer->location);
+					Lexer_moveBy(lexer, 1);
 					goto end;
 				} break;
 			}
@@ -500,15 +508,15 @@ begining:
 			{
 				case '=':
 				{
-					Lex_setupToken(token, TYPE_MORE_THAN_OR_EQUAL, STORAGE_NONE, lexer->loc);
-					Lex_moveLexerBy(lexer, 2);
+					Token_setup(token, TYPE_MORE_THAN_OR_EQUAL, STORAGE_NONE, lexer->location);
+					Lexer_moveBy(lexer, 2);
 					goto end;
 				} break;
 
 				default:
 				{
-					Lex_setupToken(token, TYPE_MORE_THAN, STORAGE_NONE, lexer->loc);
-					Lex_moveLexerBy(lexer, 1);
+					Token_setup(token, TYPE_MORE_THAN, STORAGE_NONE, lexer->location);
+					Lexer_moveBy(lexer, 1);
 					goto end;
 				} break;
 			}
@@ -520,15 +528,15 @@ begining:
 			{
 				case '=':
 				{
-					Lex_setupToken(token, TYPE_LESS_THAN_OR_EQUAL, STORAGE_NONE, lexer->loc);
-					Lex_moveLexerBy(lexer, 2);
+					Token_setup(token, TYPE_LESS_THAN_OR_EQUAL, STORAGE_NONE, lexer->location);
+					Lexer_moveBy(lexer, 2);
 					goto end;
 				} break;
 
 				default:
 				{
-					Lex_setupToken(token, TYPE_LESS_THAN, STORAGE_NONE, lexer->loc);
-					Lex_moveLexerBy(lexer, 1);
+					Token_setup(token, TYPE_LESS_THAN, STORAGE_NONE, lexer->location);
+					Lexer_moveBy(lexer, 1);
 					goto end;
 				} break;
 			}
@@ -536,79 +544,79 @@ begining:
 
 		case '(':
 		{
-			Lex_setupToken(token, TYPE_LEFT_PARENTHESIS, STORAGE_NONE, lexer->loc);
-			Lex_moveLexerBy(lexer, 1);
+			Token_setup(token, TYPE_LEFT_PARENTHESIS, STORAGE_NONE, lexer->location);
+			Lexer_moveBy(lexer, 1);
 			goto end;
 		} break;
 
 		case ')':
 		{
-			Lex_setupToken(token, TYPE_RIGHT_PARENTHESIS, STORAGE_NONE, lexer->loc);
-			Lex_moveLexerBy(lexer, 1);
+			Token_setup(token, TYPE_RIGHT_PARENTHESIS, STORAGE_NONE, lexer->location);
+			Lexer_moveBy(lexer, 1);
 			goto end;
 		} break;
 
 		case '[':
 		{
-			Lex_setupToken(token, TYPE_LEFT_BRACKET, STORAGE_NONE, lexer->loc);
-			Lex_moveLexerBy(lexer, 1);
+			Token_setup(token, TYPE_LEFT_BRACKET, STORAGE_NONE, lexer->location);
+			Lexer_moveBy(lexer, 1);
 			goto end;
 		} break;
 
 		case ']':
 		{
-			Lex_setupToken(token, TYPE_RIGHT_BRACKET, STORAGE_NONE, lexer->loc);
-			Lex_moveLexerBy(lexer, 1);
+			Token_setup(token, TYPE_RIGHT_BRACKET, STORAGE_NONE, lexer->location);
+			Lexer_moveBy(lexer, 1);
 			goto end;
 		} break;
 
 		case ':':
 		{
-			Lex_setupToken(token, TYPE_COLUMN, STORAGE_NONE, lexer->loc);
-			Lex_moveLexerBy(lexer, 1);
+			Token_setup(token, TYPE_COLUMN, STORAGE_NONE, lexer->location);
+			Lexer_moveBy(lexer, 1);
 			goto end;
 		} break;
 
 		case '"':
 		{
 			signed long long i = 1;
-			for (; *(lexer->current + i) != '"'; ++i);
+			for (; *(lexer->current + i) != '"' && lexer->current + i < lexer->buffer + lexer->length; ++i);
 
-			Lex_setupToken(token, TYPE_LITERAL, STORAGE_STRING, lexer->loc);
+			Token_setup(token, TYPE_LITERAL, STORAGE_STRING, lexer->location);
 			token->value.str = (char*)malloc((i + 1) * sizeof(char));
 			assert(token->value.str != NULL);
 			memcpy(token->value.str, lexer->current + 1, i - 1);
 			token->value.str[i] = 0;
 
-			Lex_moveLexerBy(lexer, i + 1);
+			Lexer_moveBy(lexer, i + 1);
 		} break;
 
 		case '\0':
 		{
-			Lex_setupToken(token, TYPE_EOF, STORAGE_NONE, lexer->loc);
-			Lex_moveLexerBy(lexer, 1);
+			Token_setup(token, TYPE_EOF, STORAGE_NONE, lexer->location);
+			Lexer_moveBy(lexer, 1);
 			goto end;
 		} break;
 
 		default:
 		{
-			if (Lex_tryParseKeyword(lexer, token))
+			if (Lexer_tryParseKeyword(lexer, token))
 			{
 				goto end;
 			}
 
-			if (Lex_tryParseIdentifier(lexer, token))
+			if (Lexer_tryParseIdentifier(lexer, token))
 			{
 				goto end;
 			}
 
-			if (Lex_tryParseNumericLiteral(lexer, token))
+			if (Lexer_tryParseNumericLiteral(lexer, token))
 			{
 				goto end;
 			}
 
-			Lex_setupToken(token, TYPE_ERROR, STORAGE_NONE, lexer->loc);
-			Lex_moveLexerBy(lexer, 1);
+			Token_setup(token, TYPE_ERROR, STORAGE_NONE, lexer->location);
+			Lexer_moveBy(lexer, 1);
 		} break;
 	}
 

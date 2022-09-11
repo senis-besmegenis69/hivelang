@@ -1,0 +1,12 @@
+digraph "Lex_Token"
+{
+ // LATEX_PDF_SIZE
+  bgcolor="transparent";
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="Lex_Token",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="A lexical token structure."];
+  Node2 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" value" ,fontname="Helvetica"];
+  Node2 [label="Lex_Value",height=0.2,width=0.4,color="black",URL="$d0/d68/unionLex__Value.html",tooltip="Lexical token value structure."];
+  Node3 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" loc" ,fontname="Helvetica"];
+  Node3 [label="Lex_Location",height=0.2,width=0.4,color="black",URL="$d6/d3c/structLex__Location.html",tooltip="Location used to track lexical token's position in source file for debugging and better error message..."];
+}

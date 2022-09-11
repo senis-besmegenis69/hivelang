@@ -1,28 +1,7 @@
 
-/*
-*/
-
-/*
-*/
-/*
-*/
-
 proc main():
 	"Hello, World!\n" print
-	// 
-	/*
-	*/
-
-	/*     */
-	/*
-	
-	     */
 	1 1 == if:
 		"YES\n" print
-		// "YES\n" print
-	end // 
+	end
 end
-
-// 
-
-/**/
