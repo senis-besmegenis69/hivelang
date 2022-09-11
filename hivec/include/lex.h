@@ -13,8 +13,6 @@
 #ifndef _LEX_H_
 #define _LEX_H_
 
-
-
 struct Lex_Location
 {
 	const char* file;
@@ -22,11 +20,9 @@ struct Lex_Location
 	signed long long column;
 };
 
-
-
 enum Lex_Type
 {
-	TYPE_ERROR = -1,
+	TYPE_ERROR = 0,
 
 	TYPE_ADDITION, // +
 	TYPE_SUBTRACTION, // -
@@ -59,11 +55,9 @@ enum Lex_Type
 	OPERATIONS_COUNT,
 };
 
-
-
 enum Lex_Storage
 {
-	STORAGE_NONE = -1,
+	STORAGE_NONE = 0,
 
 	STORAGE_I64,
 	STORAGE_U64,
@@ -73,25 +67,13 @@ enum Lex_Storage
 	STORAGES_COUNT,
 };
 
-
-
 union Lex_Value
 {
-	char c;
-	signed char i8;
-	signed short i16;
-	signed int i32;
 	signed long long i64;
-	unsigned char u8;
-	unsigned short u16;
-	unsigned int u32;
 	unsigned long long u64;
-	float f32;
 	long double f64;
 	char* str;
 };
-
-
 
 struct Lex_Token
 {
@@ -99,16 +81,13 @@ struct Lex_Token
 	enum Lex_Storage storage;
 	union Lex_Value value;
 	struct Lex_Location loc;
-	struct Lex_Token* next;
 };
 
 void Lex_destroyToken(
 	struct Lex_Token* const token);
 
-void Lex_printToken(
+const char* Lex_stringifyToken(
 	const struct Lex_Token* const token);
-
-
 
 struct Lex_Lexer
 {
@@ -125,7 +104,5 @@ void Lex_destroyLexer(
 
 struct Lex_Token* Lex_nextToken(
 	struct Lex_Lexer* const lexer);
-
-
 
 #endif

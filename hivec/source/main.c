@@ -142,8 +142,11 @@ int main(int argc, char** argv)
 		{
 			if (token->type == TYPE_ERROR)
 			{
-				fprintf(stdout, "Warning: encountered an error token at file: %s line: %lld column: %lld!\n", token->loc.file, token->loc.line, token->loc.column);
+				// fprintf(stdout, "Warning: encountered an error token at file: %s line: %lld column: %lld!\n", token->loc.file, token->loc.line, token->loc.column);
 			}
+
+			fprintf(stdout, "%s\n", Lex_stringifyToken(token));
+			getchar();
 		}
 
 		Lex_destroyLexer(&lexer);
