@@ -29,6 +29,7 @@ void Parser_parse(
 			fprintf(stdout, "%s: error: encountered unknown token!\n", Location_stringify(&token->location));
 		}
 
+		fprintf(stdout, "%s\n", Token_stringify(token));
 		Token_destroy(token);
 	}
 
