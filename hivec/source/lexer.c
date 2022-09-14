@@ -36,10 +36,10 @@ const char* Type_stringify(
 	{
 		[TYPE_ERROR] = "error",
 
-		[TYPE_ADDITION] = "+", // +
-		[TYPE_SUBTRACTION] = "-", // -
-		[TYPE_MULTIPLICATION] = "*", // *
-		[TYPE_DIVISION] = "/", // /
+		[TYPE_ADD] = "+", // +
+		[TYPE_SUBTRACT] = "-", // -
+		[TYPE_MULTIPLY] = "*", // *
+		[TYPE_DIVIDE] = "/", // /
 
 		[TYPE_EQUAL] = "==", // ==
 		[TYPE_NOT_EQUAL] = "!=", // !=
@@ -57,6 +57,7 @@ const char* Type_stringify(
 		[TYPE_IF] = "if", // if
 		[TYPE_THEN] = "then", // then
 		[TYPE_ELSE] = "else", // else
+		[TYPE_WHILE] = "while", // while
 		[TYPE_END] = "end", // end
 		[TYPE_USE] = "use", // use
 		[TYPE_IMPORT] = "import", // import
@@ -268,10 +269,10 @@ static signed int Lexer_tryParseKeyword(
 	assert(token != NULL);
 
 	const char* keywords[] =
-	{ "if", "then", "else", "end", "use", "import", "proc" };
+	{ "if", "then", "else", "while", "end", "use", "import", "proc" };
 
 	enum Type types[] =
-	{ TYPE_IF, TYPE_THEN, TYPE_ELSE, TYPE_END, TYPE_USE, TYPE_IMPORT, TYPE_PROC };
+	{ TYPE_IF, TYPE_THEN, TYPE_ELSE, TYPE_WHILE, TYPE_END, TYPE_USE, TYPE_IMPORT, TYPE_PROC };
 
 	for (signed int i = 0; i < 5; ++i)
 	{
@@ -419,21 +420,21 @@ begining:
 	{
 		case '+':
 		{
-			Token_setup(token, TYPE_ADDITION, STORAGE_NONE, lexer->location);
+			Token_setup(token, TYPE_ADD, STORAGE_NONE, lexer->location);
 			Lexer_moveBy(lexer, 1);
 			goto end;
 		} break;
 
 		case '-':
 		{
-			Token_setup(token, TYPE_SUBTRACTION, STORAGE_NONE, lexer->location);
+			Token_setup(token, TYPE_SUBTRACT, STORAGE_NONE, lexer->location);
 			Lexer_moveBy(lexer, 1);
 			goto end;
 		} break;
 
 		case '*':
 		{
-			Token_setup(token, TYPE_MULTIPLICATION, STORAGE_NONE, lexer->location);
+			Token_setup(token, TYPE_MULTIPLY, STORAGE_NONE, lexer->location);
 			Lexer_moveBy(lexer, 1);
 			goto end;
 		} break;
@@ -456,7 +457,7 @@ begining:
 
 				default:
 				{
-					Token_setup(token, TYPE_DIVISION, STORAGE_NONE, lexer->location);
+					Token_setup(token, TYPE_DIVIDE, STORAGE_NONE, lexer->location);
 					Lexer_moveBy(lexer, 1);
 					goto end;
 				} break;

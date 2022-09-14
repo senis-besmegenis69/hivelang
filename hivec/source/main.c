@@ -10,6 +10,7 @@
  * @date 2022-09-05
  */
 
+#include <compiler.h>
 #include <parser.h>
 #include <lexer.h>
 
@@ -128,13 +129,13 @@ int main(int argc, char** argv)
 
 	if (output == NULL || (output != NULL && strlen(output) <= 0))
 	{
-		output = "a.txt";
+		output = "target.asm";
 	}
 
 	// Parsing the source and compiling the target
 	for (signed int index = 0; index < sourcesCount; ++index)
 	{
-		Parser_parse(sources[index]);
+		Compiler_compileToNASM(sources[index], output);
 	}
 
 	return 0;

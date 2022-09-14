@@ -1,283 +1,61 @@
 
-# Project hivelang (HLang)
+# Project hivelang
 
 
-## HLang toolkit
+## The hiveLang toolkit
 
 HLang compiler - [hivec](./hivec/README.md)<br>
 HLang standard library - [hivestd](#)<br>
 HLang package manager - [hivepm](#)<br>
 
 
-## HLang syntax
+## The hiveLang syntax
 
 The hivelang will have the following keywords:
 
  - `import`<br>usage:
 	```
-	import "std.io.hlang";
+	import "std.io.hlang"
 	```
-
- - `export`<br>usage:
-	```
-	export proc myFunc() -> void:
-		// The code...
-	end
-	```
-
- - `module`<br>usage:
-	```
-	export module math:
-		// Functions and everything else...
-	end
-	```
-
- - `sizeOf`<br>usage:
-	```
-	u64 size1 = sizeOf(f32);
-	u64 size2 = sizeOf("Hello!\n"); // With the \0
-	```
-
- - `typeOf`<br>usage:
-	```
-	i32 val = 0;
-
-	if typeOf(val) == i32:
-		// The code...
-	end
-	```
-
- - `inline`<br>usage:
-	```
-	inline proc myFunc() -> void:
-		// The code...
-	end
-	```
-
- - `proc`<br>usage:
-	```
-	proc myFunc() -> void:
-		// The code...
-	end
-	```
-
- - `mutable`<br>usage:
-	```
-	mutable string val = "hello";
-	val[0] = 'y';
-	```
-
- - `return`<br>usage:
-	```
-	proc myFunc(i32 val) -> i32:
-		return val + 5;
-	end
-	```
-
  - `if`<br>usage:
 	```
-	if a == b:
-		// The code...
+	1 1 == if then
+		// ...
 	end
 	```
-
- - `switch`<br>usage:
+ - `then`<br>usage:
 	```
-	switch a:
-		case 0:
-		end
-
-		case 1:
-		case 2:
-		end
-
-		case 3:
-		end
-
-		default:
-		end
+	1 1 == if then
+		// ...
 	end
 	```
-
- - `for`<br>usage:
+ - `else`<br>usage:
 	```
-	for i32 i = 0; i < 10; i++:
-		// The code...
+	1 1 == if then
+		// ...
+	else
+		// ...
 	end
 	```
-
  - `while`<br>usage:
 	```
-	while a != b:
-		// The code...
+	10 while dup 0 > then
+		// ...
 	end
 	```
-
- - `use`<br>usage:
-	```
-	i32 a = 0, b = 1;
-
-	i32 c = use a, b -> i32:
-		return a + b;
-	end
-	```
-
  - `end`<br>usage:
 	```
-	if a == b:
-		// The code...
+	1 1 == if then
+		// ...
 	end
 	```
 
- - `alias`<br>usage:
+Default functions:
+ - `clone`<br>usage:
 	```
-	alias id_t = i32;
+	5 clone // puts 2 5's in the stack
 	```
-
- - `struct`<br>usage:
+ - `drop`<br>usage:
 	```
-	struct Vec2:
-		f32 x;
-		f32 y;
-	end
+	7 5 drop // pops 5 from the stack
 	```
-
- - `enum`<br>usage:
-	```
-	enum Flag:
-		One = 0,
-		Two
-	end
-	```
-
- - `void`<br>usage:
-	```
-	proc myFunc() -> void:
-	end
-	```
-
- - `null`<br>usage:
-	```
-	char* p = null;
-	```
-
- - `bool`<br>usage:
-	```
-	bool a = true;
-	bool b = false;
-	```
-
- - `true`<br>usage:
-	```
-	bool a = true;
-	```
-
- - `false`<br>usage:
-	```
-	bool a = false;
-	```
-
- - `char`<br>usage:
-	```
-	char c1 = 'k';
-	char c2 = 75;
-	```
-
- - `i8`<br>usage:
-	```
-	i8 v = 2;
-	```
-
- - `i16`<br>usage:
-	```
-	i16 v = 2;
-	```
-
- - `i32`<br>usage:
-	```
-	i32 v = 2;
-	```
-
- - `i64`<br>usage:
-	```
-	i64 v = 2;
-	```
-
- - `u8`<br>usage:
-	```
-	u8 v = 2;
-	```
-
- - `u16`<br>usage:
-	```
-	u16 v = 2;
-	```
-
- - `u32`<br>usage:
-	```
-	u32 v = 2;
-	```
-
- - `u64`<br>usage:
-	```
-	u64 v = 2;
-	```
-
- - `f32`<br>usage:
-	```
-	f32 v = 2;
-	```
-
- - `f64`<br>usage:
-	```
-	f64 v = 2;
-	```
-
- - `string`<br>usage:
-	```
-	string str = "Hello!\n";
-	u64 length = str.length();
-	```
-
-
-An example program:
-
-```hlang
-import "std.io.hlang"
-
-
-proc linearSum(i32 count, i32[] values) -> i64:
-	i64 sum = 0i;
-
-	for i32 i = 0; i < count; i++:
-		sum += values[i];
-	end
-
-	return sum;
-end
-
-
-proc main(i32 argc, string[] args) -> i32:
-	if argc > 1i:
-		for mutable i32 i = 1i; i < argc; i++:
-			std::print(f"{i}-th argument is {args[i]}\n");
-		end
-
-		return argc;
-	end
-
-	if argc < 33i:
-		mutable i32[] values = i32[32u];
-
-		for mutable i32 i = 1i; i < argc; i++:
-			values[i] = args[i].length();
-		end
-
-		return linearSum(argc - 1i, values);
-	end
-
-	return 0i;
-end
-
-// Parentheses can be used inside if, for, and other statements / expressions.
-```

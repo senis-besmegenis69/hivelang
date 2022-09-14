@@ -15,7 +15,7 @@ TESTS_DIR := ./tests
 
 # Sources (searches recursively inside the source directory)
 SRC_DIR = ./source
-SRCS = $(SRC_DIR)/main.c $(SRC_DIR)/lexer.c $(SRC_DIR)/parser.c
+SRCS = $(SRC_DIR)/main.c $(SRC_DIR)/lexer.c $(SRC_DIR)/parser.c $(SRC_DIR)/compiler.c
 
 # Includes
 INCLUDE_DIR = ./include

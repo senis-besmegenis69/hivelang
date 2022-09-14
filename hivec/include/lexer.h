@@ -43,10 +43,10 @@ enum Type
 {
 	TYPE_ERROR = 0,
 
-	TYPE_ADDITION, // +
-	TYPE_SUBTRACTION, // -
-	TYPE_MULTIPLICATION, // *
-	TYPE_DIVISION, // /
+	TYPE_ADD, // +
+	TYPE_SUBTRACT, // -
+	TYPE_MULTIPLY, // *
+	TYPE_DIVIDE, // /
 
 	TYPE_EQUAL, // ==
 	TYPE_NOT_EQUAL, // !=
@@ -64,6 +64,7 @@ enum Type
 	TYPE_IF, // if
 	TYPE_THEN, // then
 	TYPE_ELSE, // else
+	TYPE_WHILE, // while
 	TYPE_END, // end
 	TYPE_USE, // use
 	TYPE_IMPORT, // import
